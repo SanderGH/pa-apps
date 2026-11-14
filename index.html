@@ -16,7 +16,8 @@ h1{font-size:20px;margin:0 0 4px}.hint{color:var(--hint);font-size:14px;margin-b
 .qty h2{font-size:16px;margin:0 0 10px}.opts{display:flex;flex-wrap:wrap;gap:8px}
 .opt{padding:10px 14px;border-radius:10px;background:var(--bg);cursor:pointer;border:2px solid transparent}
 .opt.sel{border-color:var(--acc)}
-.cart{margin-top:16px}.cart li{margin:4px 0}.total{font-weight:600;margin-top:8px}
+.cart{margin-top:16px;padding:0;list-style:none}.cart li{margin:6px 0;display:flex;align-items:center;gap:10px}
+.rm{border:0;background:var(--card);color:var(--fg);border-radius:8px;width:32px;height:32px;font-size:16px}.total{font-weight:600;margin-top:8px}
 button.done{margin-top:16px;width:100%;padding:14px;border:0;border-radius:12px;background:var(--acc);color:var(--acc-fg);font-size:16px}
 button.done:disabled{opacity:.35}
 .result{margin-top:16px;padding:12px;border-radius:12px;background:var(--card);display:none}
@@ -54,7 +55,9 @@ function showQty(){const it=items[cur];document.getElementById('qty').style.disp
    try{Telegram.WebApp.HapticFeedback.selectionChanged()}catch(e){}showQty();render()};o.appendChild(b)})}
 function render(){document.querySelectorAll('.tile').forEach((t,j)=>t.classList.toggle('sel',j===cur||!!cart[items[j].n]));
  const c=document.getElementById('cart');c.innerHTML='';let s=0;
- for(const[n,[l,k]]of Object.entries(cart)){s+=k;const li=document.createElement('li');li.textContent=`${n} ${l} — ${k} ккал`;c.appendChild(li)}
+ for(const[n,[l,k]]of Object.entries(cart)){s+=k;const li=document.createElement('li');const sp=document.createElement('span');sp.textContent=`${n} ${l} — ${k} ккал`;
+  const x=document.createElement('button');x.className='rm';x.textContent='✕';x.onclick=()=>{delete cart[n];if(cur!==null&&items[cur].n===n)showQty();render()};
+  li.append(x,sp);c.appendChild(li)}
  document.getElementById('total').textContent=s?`Итого ~${s} ккал`:'';
  document.getElementById('done').disabled=!Object.keys(cart).length}
 document.getElementById('done').onclick=()=>{const r=document.getElementById('result');r.style.display='block';
