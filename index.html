@@ -47,6 +47,7 @@ items.forEach((it,i)=>{const d=document.createElement('div');d.className='tile';
   if(it.o.length===1){cur=null;document.getElementById('qty').style.display='none';
    if(cart[it.n])delete cart[it.n];else{cart[it.n]=it.o[0];d.classList.add('sel')}
    try{Telegram.WebApp.HapticFeedback.selectionChanged()}catch(e){}render();return}
+  if(cart[it.n]||cur===i){delete cart[it.n];cur=null;document.getElementById('qty').style.display='none';render();return}
   cur=i;showQty();render()};grid.appendChild(d)});
 function showQty(){const it=items[cur];document.getElementById('qty').style.display='block';
  document.getElementById('qtitle').textContent=it.e+' '+it.n+' — сколько?';const o=document.getElementById('opts');o.innerHTML='';
