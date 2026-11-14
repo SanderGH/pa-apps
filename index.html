@@ -22,7 +22,7 @@ button.done{margin-top:16px;width:100%;padding:14px;border:0;border-radius:12px;
 button.done:disabled{opacity:.35}
 .result{margin-top:16px;padding:12px;border-radius:12px;background:var(--card);display:none}
 </style></head><body>
-<h1>🍎 Перекус</h1><div class="hint">Проба: ничего не записывается</div>
+<h1>🍎 Перекус</h1><div class="hint">Выбери и нажми «Готово» — запишу в дневник</div>
 <div class="grid" id="grid"></div>
 <div class="qty" id="qty"><h2 id="qtitle"></h2><div class="opts" id="opts"></div></div>
 <ul class="cart" id="cart"></ul><div class="total" id="total"></div>
@@ -61,8 +61,8 @@ function render(){document.querySelectorAll('.tile').forEach((t,j)=>t.classList.
   li.append(x,sp);c.appendChild(li)}
  document.getElementById('total').textContent=s?`Итого ~${s} ккал`:'';
  document.getElementById('done').disabled=!Object.keys(cart).length}
-document.getElementById('done').onclick=()=>{const r=document.getElementById('result');r.style.display='block';
- const e=Object.entries(cart);r.textContent=e.length?'Боту ушло бы: «перекус: '+e.map(([n,[l]])=>n.toLowerCase()+' '+l).join(', ')+'»':'Ничего не выбрано';
- if(e.length)setTimeout(()=>{try{Telegram.WebApp.sendData('тест перекус: '+e.map(([n,[l]])=>n.toLowerCase()+' '+l).join(', '))}catch(x){}},1500)};
+document.getElementById('done').onclick=()=>{const e=Object.entries(cart);if(!e.length)return;
+ const text='перекус: '+e.map(([n,[l]])=>n.toLowerCase()+' '+l).join(', ');const r=document.getElementById('result');r.style.display='block';
+ try{Telegram.WebApp.sendData(text)}catch(x){r.textContent='Отсюда отправить нельзя — открой через кнопку «🍎 Перекус» внизу чата. Или напиши боту: «'+text+'»'}};
 try{Telegram.WebApp.ready();Telegram.WebApp.expand()}catch(e){}
 </script></body></html>
