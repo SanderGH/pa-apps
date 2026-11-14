@@ -1,69 +1,10 @@
 <!doctype html>
 <html lang="ru"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>Перекус</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<style>
-:root{--bg:var(--tg-theme-bg-color,#fff);--fg:var(--tg-theme-text-color,#111);--hint:var(--tg-theme-hint-color,#888);
---card:var(--tg-theme-secondary-bg-color,#f1f1f4);--acc:var(--tg-theme-button-color,#2a8bf2);--acc-fg:var(--tg-theme-button-text-color,#fff)}
-*{box-sizing:border-box}body{margin:0;padding:16px;background:var(--bg);color:var(--fg);font:16px/1.35 -apple-system,system-ui,sans-serif}
-h1{font-size:20px;margin:0 0 4px}.hint{color:var(--hint);font-size:14px;margin-bottom:14px}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.tile{background:var(--card);border-radius:14px;padding:12px 6px;text-align:center;cursor:pointer;border:2px solid transparent;user-select:none}
-.tile .e{font-size:30px}.tile .n{font-size:14px;margin-top:4px}.tile .c{font-size:12px;color:var(--hint)}
-.tile.sel{border-color:var(--acc)}
-.qty{margin-top:16px;background:var(--card);border-radius:14px;padding:12px;display:none}
-.qty h2{font-size:16px;margin:0 0 10px}.opts{display:flex;flex-wrap:wrap;gap:8px}
-.opt{padding:10px 14px;border-radius:10px;background:var(--bg);cursor:pointer;border:2px solid transparent}
-.opt.sel{border-color:var(--acc)}
-.cart{margin-top:16px;padding:0;list-style:none}.cart li{margin:6px 0;display:flex;align-items:center;gap:10px}
-.rm{border:0;background:var(--card);color:var(--fg);border-radius:8px;width:32px;height:32px;font-size:16px}.total{font-weight:600;margin-top:8px}
-button.done{margin-top:16px;width:100%;padding:14px;border:0;border-radius:12px;background:var(--acc);color:var(--acc-fg);font-size:16px}
-button.done:disabled{opacity:.35}
-.result{margin-top:16px;padding:12px;border-radius:12px;background:var(--card);display:none}
-</style></head><body>
-<h1>🍎 Перекус</h1><div class="hint">Выбери и нажми «Готово» — запишу в дневник</div>
-<div class="grid" id="grid"></div>
-<div class="qty" id="qty"><h2 id="qtitle"></h2><div class="opts" id="opts"></div></div>
-<ul class="cart" id="cart"></ul><div class="total" id="total"></div>
-<button class="done" id="done" disabled>Готово</button>
-<div class="result" id="result"></div>
-<script>
-const items=[
- {e:"🍎",n:"Яблоко",o:[["1 шт.",75],["½",38]]},
- {e:"🍊",n:"Мандарин",o:[["1 шт.",40]]},
- {e:"🥝",n:"Киви",o:[["1 шт.",45]]},
- {e:"🥛",n:"Кефир",o:[["½ стакана",65],["стакан",130]]},
- {e:"🌰",n:"Миндаль",o:[["5 шт.",37],["6 шт.",45],["7 шт.",52],["8 шт.",60]]},
- {e:"🌰",n:"Грецкий",o:[["1 шт.",33],["2 шт.",65]]},
- {e:"🍑",n:"Курага",o:[["2 шт.",30],["3 шт.",45],["4 шт.",60]]},
- {e:"🍘",n:"Хлебцы",o:[["1 + сыр",60],["2 + сыр",120]]},
- {e:"🍫",n:"Шоколад",o:[["⅕ плитки",110],["⅒ плитки",55]]}];
-const cart={};let cur=null;
-const grid=document.getElementById('grid');
-items.forEach((it,i)=>{const d=document.createElement('div');d.className='tile';
- d.innerHTML=`<div class="e">${it.e}</div><div class="n">${it.n}</div><div class="c">${it.o[0][1]}+ ккал</div>`;
- d.onclick=()=>{document.querySelectorAll('.tile').forEach(t=>t.classList.remove('sel'));
-  if(it.o.length===1){cur=null;document.getElementById('qty').style.display='none';
-   if(cart[it.n])delete cart[it.n];else{cart[it.n]=it.o[0];d.classList.add('sel')}
-   try{Telegram.WebApp.HapticFeedback.selectionChanged()}catch(e){}render();return}
-  if(cart[it.n]||cur===i){delete cart[it.n];cur=null;document.getElementById('qty').style.display='none';render();return}
-  cur=i;showQty();render()};grid.appendChild(d)});
-function showQty(){const it=items[cur];document.getElementById('qty').style.display='block';
- document.getElementById('qtitle').textContent=it.e+' '+it.n+' — сколько?';const o=document.getElementById('opts');o.innerHTML='';
- it.o.forEach(([l,k])=>{const b=document.createElement('div');b.className='opt'+(cart[it.n]&&cart[it.n][0]===l?' sel':'');b.textContent=l+' · '+k;
-  b.onclick=()=>{if(cart[it.n]&&cart[it.n][0]===l)delete cart[it.n];else cart[it.n]=[l,k];
-   try{Telegram.WebApp.HapticFeedback.selectionChanged()}catch(e){}showQty();render()};o.appendChild(b)})}
-function render(){document.querySelectorAll('.tile').forEach((t,j)=>t.classList.toggle('sel',j===cur||!!cart[items[j].n]));
- const c=document.getElementById('cart');c.innerHTML='';let s=0;
- for(const[n,[l,k]]of Object.entries(cart)){s+=k;const li=document.createElement('li');const sp=document.createElement('span');sp.textContent=`${n} ${l} — ${k} ккал`;
-  const x=document.createElement('button');x.className='rm';x.textContent='✕';x.onclick=()=>{delete cart[n];if(cur!==null&&items[cur].n===n)showQty();render()};
-  li.append(x,sp);c.appendChild(li)}
- document.getElementById('total').textContent=s?`Итого ~${s} ккал`:'';
- document.getElementById('done').disabled=!Object.keys(cart).length}
-document.getElementById('done').onclick=()=>{const e=Object.entries(cart);if(!e.length)return;
- const text='перекус: '+e.map(([n,[l]])=>n.toLowerCase()+' '+l).join(', ');const r=document.getElementById('result');r.style.display='block';
- const fromKeyboard=window.Telegram&&Telegram.WebApp.initData!==undefined&&!Telegram.WebApp.initDataUnsafe.query_id&&Telegram.WebApp.platform!=='unknown';
- try{if(!fromKeyboard)throw 0;Telegram.WebApp.sendData(text)}catch(x){r.textContent='Отсюда отправить нельзя — открой через кнопку «🍎 Перекус» внизу чата. Или напиши боту: «'+text+'»'}};
-try{Telegram.WebApp.ready();Telegram.WebApp.expand()}catch(e){}
-</script></body></html>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Мини-приложения</title>
+<style>body{margin:0;padding:16px;font:16px/1.4 -apple-system,system-ui,sans-serif}a{display:block;padding:12px 0}</style>
+</head><body>
+<h1>Мини-приложения</h1>
+<a href="snack/">🍎 Перекус</a>
+<a href="pushups/">💪 Отжимания</a>
+</body></html>
