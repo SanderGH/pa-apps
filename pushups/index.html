@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Отжимания</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{--bg:var(--tg-theme-bg-color,#fff);--fg:var(--tg-theme-text-color,#111);--hint:var(--tg-theme-hint-color,#888);
+--card:var(--tg-theme-secondary-bg-color,#f1f1f4);--acc:var(--tg-theme-button-color,#2a8bf2);--acc-fg:var(--tg-theme-button-text-color,#fff)}
+*{box-sizing:border-box}body{margin:0;padding:16px;background:var(--bg);color:var(--fg);font:16px/1.35 -apple-system,system-ui,sans-serif}
+h1{font-size:20px;margin:0 0 4px}.hint{color:var(--hint);font-size:14px;margin-bottom:18px}
+.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.q{background:var(--card);border-radius:14px;padding:16px 0;text-align:center;font-size:22px;font-weight:600;cursor:pointer;border:2px solid transparent;user-select:none}
+.q.sel{border-color:var(--acc)}
+.step{margin-top:18px;display:flex;align-items:center;justify-content:center;gap:18px}
+.step button{width:56px;height:56px;border-radius:50%;border:0;background:var(--card);color:var(--fg);font-size:28px}
+.num{font-size:44px;font-weight:700;min-width:90px;text-align:center}
+button.done{margin-top:22px;width:100%;padding:14px;border:0;border-radius:12px;background:var(--acc);color:var(--acc-fg);font-size:16px}
+button.done:disabled{opacity:.35}
+.result{margin-top:16px;padding:12px;border-radius:12px;background:var(--card);display:none}
+</style></head><body>
+<h1>💪 Отжимания</h1><div class="hint">Выбери или подкрути число и нажми «Готово» — запишу</div>
+<div class="quick" id="quick"></div>
+<div class="step"><button id="minus">−</button><div class="num" id="num">—</div><button id="plus">+</button></div>
+<button class="done" id="done" disabled>Готово</button>
+<div class="result" id="result"></div>
+<script>
+let n=0;const quick=[15,20,25,30];
+const q=document.getElementById('quick');
+function render(){document.getElementById('num').textContent=n||'—';document.getElementById('done').disabled=!n;
+ document.querySelectorAll('.q').forEach(b=>b.classList.toggle('sel',+b.dataset.v===n))}
+quick.forEach(v=>{const b=document.createElement('div');b.className='q';b.dataset.v=v;b.textContent=v;
+ b.onclick=()=>{n=(n===v)?0:v;try{Telegram.WebApp.HapticFeedback.selectionChanged()}catch(e){}render()};q.appendChild(b)});
+document.getElementById('minus').onclick=()=>{n=Math.max(0,n-1);render()};
+document.getElementById('plus').onclick=()=>{n=Math.min(200,n+1);render()};
+document.getElementById('done').onclick=()=>{if(!n)return;const text='отжимания: '+n;const r=document.getElementById('result');r.style.display='block';
+ const fromKeyboard=window.Telegram&&Telegram.WebApp.initData!==undefined&&!Telegram.WebApp.initDataUnsafe.query_id&&Telegram.WebApp.platform!=='unknown';
+ try{if(!fromKeyboard)throw 0;Telegram.WebApp.sendData(text)}catch(x){r.textContent='Отсюда отправить нельзя — открой через кнопку «💪 Отжался» внизу чата. Или напиши боту: «'+text+'»'}};
+try{Telegram.WebApp.ready();Telegram.WebApp.expand()}catch(e){}
+render();
+</script></body></html>
