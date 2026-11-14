@@ -46,13 +46,14 @@ items.forEach((it,i)=>{const d=document.createElement('div');d.className='tile';
   if(it.o.length===1){cur=null;document.getElementById('qty').style.display='none';
    if(cart[it.n])delete cart[it.n];else{cart[it.n]=it.o[0];d.classList.add('sel')}
    try{Telegram.WebApp.HapticFeedback.selectionChanged()}catch(e){}render();return}
-  cur=i;d.classList.add('sel');showQty()};grid.appendChild(d)});
+  cur=i;showQty();render()};grid.appendChild(d)});
 function showQty(){const it=items[cur];document.getElementById('qty').style.display='block';
  document.getElementById('qtitle').textContent=it.e+' '+it.n+' — сколько?';const o=document.getElementById('opts');o.innerHTML='';
  it.o.forEach(([l,k])=>{const b=document.createElement('div');b.className='opt'+(cart[it.n]&&cart[it.n][0]===l?' sel':'');b.textContent=l+' · '+k;
   b.onclick=()=>{if(cart[it.n]&&cart[it.n][0]===l)delete cart[it.n];else cart[it.n]=[l,k];
    try{Telegram.WebApp.HapticFeedback.selectionChanged()}catch(e){}showQty();render()};o.appendChild(b)})}
-function render(){const c=document.getElementById('cart');c.innerHTML='';let s=0;
+function render(){document.querySelectorAll('.tile').forEach((t,j)=>t.classList.toggle('sel',j===cur||!!cart[items[j].n]));
+ const c=document.getElementById('cart');c.innerHTML='';let s=0;
  for(const[n,[l,k]]of Object.entries(cart)){s+=k;const li=document.createElement('li');li.textContent=`${n} ${l} — ${k} ккал`;c.appendChild(li)}
  document.getElementById('total').textContent=s?`Итого ~${s} ккал`:'';
  document.getElementById('done').disabled=!Object.keys(cart).length}
