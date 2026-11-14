@@ -30,7 +30,7 @@ button.done:disabled{opacity:.35}
 <script>
 const items=[
  {e:"🍎",n:"Яблоко",o:[["1 шт.",75],["½",38]]},
- {e:"🍊",n:"Мандарин",o:[["1 шт.",40],["2 шт.",80]]},
+ {e:"🍊",n:"Мандарин",o:[["1 шт.",40]]},
  {e:"🥝",n:"Киви",o:[["1 шт.",45]]},
  {e:"🥛",n:"Кефир",o:[["½ стакана",65],["стакан",130]]},
  {e:"🌰",n:"Миндаль",o:[["5 шт.",37],["6 шт.",45],["7 шт.",52],["8 шт.",60]]},
@@ -42,7 +42,11 @@ const cart={};let cur=null;
 const grid=document.getElementById('grid');
 items.forEach((it,i)=>{const d=document.createElement('div');d.className='tile';
  d.innerHTML=`<div class="e">${it.e}</div><div class="n">${it.n}</div><div class="c">${it.o[0][1]}+ ккал</div>`;
- d.onclick=()=>{cur=i;document.querySelectorAll('.tile').forEach(t=>t.classList.remove('sel'));d.classList.add('sel');showQty()};grid.appendChild(d)});
+ d.onclick=()=>{document.querySelectorAll('.tile').forEach(t=>t.classList.remove('sel'));
+  if(it.o.length===1){cur=null;document.getElementById('qty').style.display='none';
+   if(cart[it.n])delete cart[it.n];else{cart[it.n]=it.o[0];d.classList.add('sel')}
+   try{Telegram.WebApp.HapticFeedback.selectionChanged()}catch(e){}render();return}
+  cur=i;d.classList.add('sel');showQty()};grid.appendChild(d)});
 function showQty(){const it=items[cur];document.getElementById('qty').style.display='block';
  document.getElementById('qtitle').textContent=it.e+' '+it.n+' — сколько?';const o=document.getElementById('opts');o.innerHTML='';
  it.o.forEach(([l,k])=>{const b=document.createElement('div');b.className='opt'+(cart[it.n]&&cart[it.n][0]===l?' sel':'');b.textContent=l+' · '+k;
