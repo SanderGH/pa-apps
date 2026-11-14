@@ -8,7 +8,8 @@
 --card:var(--tg-theme-secondary-bg-color,#f1f1f4);--acc:var(--tg-theme-button-color,#2a8bf2);--acc-fg:var(--tg-theme-button-text-color,#fff)}
 *{box-sizing:border-box}body{margin:0;padding:16px;background:var(--bg);color:var(--fg);font:16px/1.35 -apple-system,system-ui,sans-serif}
 h1{font-size:20px;margin:0 0 4px}h2{font-size:15px;margin:18px 0 8px;color:var(--hint);font-weight:500}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.crave{grid-column:1/-1;font-size:17px}
 .big{background:var(--card);border-radius:14px;padding:16px 0;text-align:center;font-size:20px;font-weight:600;cursor:pointer;border:2px solid transparent;user-select:none}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{background:var(--card);border-radius:18px;padding:8px 14px;cursor:pointer;border:2px solid transparent;user-select:none}
@@ -25,10 +26,10 @@ button.done:disabled{opacity:.35}
 <button class="done" id="done" disabled>Готово</button>
 <div class="result" id="result"></div>
 <script>
-const amounts=[["1","1 сигарета"],["0,5","½ сигареты"]];
+const amounts=[["0,5","½"],["0,67","⅔"],["1","1"],["тяга","🆘 Тянет, держусь"]];
 const reasons=["после кофе","после еды","работа / нервы","пауза / скука","с компанией","алкоголь","после сна"];
 let amount=null,reason=null;
-function chips(el,list,get,set,label){list.forEach(v=>{const b=document.createElement('div');b.className=el.id==='amount'?'big':'chip';
+function chips(el,list,get,set,label){list.forEach(v=>{const b=document.createElement('div');b.className=el.id==='amount'?(v[0]==='тяга'?'big crave':'big'):'chip';
  b.textContent=label?label(v):v;b.onclick=()=>{set(get()===v?null:v);try{Telegram.WebApp.HapticFeedback.selectionChanged()}catch(e){}render()};
  b.dataset.v=Array.isArray(v)?v[0]:v;el.appendChild(b)})}
 const A=document.getElementById('amount'),R=document.getElementById('reasons');
@@ -36,7 +37,7 @@ chips(A,amounts,()=>amount,v=>amount=v,v=>v[1]);chips(R,reasons,()=>reason,v=>re
 function render(){A.querySelectorAll('.big').forEach(b=>b.classList.toggle('sel',!!amount&&b.dataset.v===amount[0]));
  R.querySelectorAll('.chip').forEach(b=>b.classList.toggle('sel',b.dataset.v===reason));
  document.getElementById('done').disabled=!amount}
-document.getElementById('done').onclick=()=>{if(!amount)return;const text='курение: '+amount[0]+(reason?'; повод: '+reason:'');
+document.getElementById('done').onclick=()=>{if(!amount)return;const text=(amount[0]==='тяга'?'тянет курить':'курение: '+amount[0])+(reason?'; повод: '+reason:'');
  const r=document.getElementById('result');r.style.display='block';
  const fromKeyboard=window.Telegram&&Telegram.WebApp.initData!==undefined&&!Telegram.WebApp.initDataUnsafe.query_id&&Telegram.WebApp.platform!=='unknown';
  try{if(!fromKeyboard)throw 0;Telegram.WebApp.sendData(text)}catch(x){r.textContent='Отсюда отправить нельзя — открой через кнопку «🚬 Курение» внизу чата. Или напиши боту: «'+text+'»'}};
