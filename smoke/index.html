@@ -26,7 +26,7 @@ button.done:disabled{opacity:.35}
 <button class="done" id="done" disabled>Готово</button>
 <div class="result" id="result"></div>
 <script>
-const amounts=[["0,5","½"],["0,67","⅔"],["1","1"],["тяга","🆘 Тянет, держусь"]];
+const amounts=[["0,5","½"],["0,67","⅔"],["1","1"],["тяга","🆘 Тянет курить"]];
 const reasons=["после кофе","после еды","работа / нервы","пауза / скука","с компанией","алкоголь","после сна"];
 let amount=null,reason=null;
 function chips(el,list,get,set,label){list.forEach(v=>{const b=document.createElement('div');b.className=el.id==='amount'?(v[0]==='тяга'?'big crave':'big'):'chip';
