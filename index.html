@@ -63,6 +63,7 @@ function render(){document.querySelectorAll('.tile').forEach((t,j)=>t.classList.
  document.getElementById('done').disabled=!Object.keys(cart).length}
 document.getElementById('done').onclick=()=>{const e=Object.entries(cart);if(!e.length)return;
  const text='перекус: '+e.map(([n,[l]])=>n.toLowerCase()+' '+l).join(', ');const r=document.getElementById('result');r.style.display='block';
- try{Telegram.WebApp.sendData(text)}catch(x){r.textContent='Отсюда отправить нельзя — открой через кнопку «🍎 Перекус» внизу чата. Или напиши боту: «'+text+'»'}};
+ const fromKeyboard=window.Telegram&&Telegram.WebApp.initData!==undefined&&!Telegram.WebApp.initDataUnsafe.query_id&&Telegram.WebApp.platform!=='unknown';
+ try{if(!fromKeyboard)throw 0;Telegram.WebApp.sendData(text)}catch(x){r.textContent='Отсюда отправить нельзя — открой через кнопку «🍎 Перекус» внизу чата. Или напиши боту: «'+text+'»'}};
 try{Telegram.WebApp.ready();Telegram.WebApp.expand()}catch(e){}
 </script></body></html>
