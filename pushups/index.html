@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ru"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>Отжимания и пресс</title>
+<title>Спорт</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 :root{--bg:var(--tg-theme-bg-color,#fff);--fg:var(--tg-theme-text-color,#111);--hint:var(--tg-theme-hint-color,#888);
@@ -48,7 +48,7 @@ document.getElementById('minus').onclick=()=>{n=Math.max(0,n-1);render()};
 document.getElementById('plus').onclick=()=>{n=Math.min(200,n+1);render()};
 function send(text){const r=document.getElementById('result');r.style.display='block';
  const fromKeyboard=window.Telegram&&Telegram.WebApp.initData!==undefined&&!Telegram.WebApp.initDataUnsafe.query_id&&Telegram.WebApp.platform!=='unknown';
- try{if(!fromKeyboard)throw 0;Telegram.WebApp.sendData(text)}catch(x){r.textContent='Отсюда отправить нельзя — открой через кнопку «💪 Отжался» внизу чата. Или напиши боту: «'+text+'»'}}
+ try{if(!fromKeyboard)throw 0;Telegram.WebApp.sendData(text)}catch(x){r.textContent='Отсюда отправить нельзя — открой через кнопку «💪 Спорт» внизу чата. Или напиши боту: «'+text+'»'}}
 document.getElementById('done').onclick=()=>{if(n)send('отжимания: '+n)};
 let p=0;const pq=document.getElementById('pquick');
 function prender(){document.getElementById('pnum').textContent=p||'—';
