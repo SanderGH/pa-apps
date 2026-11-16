@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ru"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>Отжимания</title>
+<title>Отжимания и пресс</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 :root{--bg:var(--tg-theme-bg-color,#fff);--fg:var(--tg-theme-text-color,#111);--hint:var(--tg-theme-hint-color,#888);
@@ -17,11 +17,25 @@ h1{font-size:20px;margin:0 0 4px}.hint{color:var(--hint);font-size:14px;margin-b
 button.done{margin-top:22px;width:100%;padding:14px;border:0;border-radius:12px;background:var(--acc);color:var(--acc-fg);font-size:16px}
 button.done:disabled{opacity:.35}
 .result{margin-top:16px;padding:12px;border-radius:12px;background:var(--card);display:none}
+.tabs{display:flex;gap:6px;background:var(--card);border-radius:12px;padding:4px;margin-bottom:14px}
+.tab{flex:1;text-align:center;padding:9px 0;border-radius:9px;font-weight:600;cursor:pointer;user-select:none}
+.tab.on{background:var(--bg)}.pane{display:none}.pane.on{display:block}
+.opt{color:var(--hint);font-size:14px;margin:20px 0 8px}
 </style></head><body>
-<h1>💪 Отжимания</h1><div class="hint">Выбери или подкрути число и нажми «Готово» — запишу</div>
+<div class="tabs"><div class="tab on" data-p="pu">💪 Отжимания</div><div class="tab" data-p="abs">🔥 Пресс</div></div>
+<div class="pane on" id="pu">
+<div class="hint">Выбери или подкрути число и нажми «Готово» — запишу</div>
 <div class="quick" id="quick"></div>
 <div class="step"><button id="minus">−</button><div class="num" id="num">—</div><button id="plus">+</button></div>
 <button class="done" id="done" disabled>Готово</button>
+</div>
+<div class="pane" id="abs">
+<div class="hint">Планка, «мёртвый жук», обратные скручивания — через день</div>
+<div class="opt">Планку держал (не обязательно), сек:</div>
+<div class="quick" id="pquick"></div>
+<div class="step"><button id="pminus">−</button><div class="num" id="pnum">—</div><button id="pplus">+</button></div>
+<button class="done" id="absdone">✓ Сделал пресс</button>
+</div>
 <div class="result" id="result"></div>
 <script>
 let n=0;const quick=[15,20,25,30];
@@ -32,9 +46,20 @@ quick.forEach(v=>{const b=document.createElement('div');b.className='q';b.datase
  b.onclick=()=>{n=(n===v)?0:v;try{Telegram.WebApp.HapticFeedback.selectionChanged()}catch(e){}render()};q.appendChild(b)});
 document.getElementById('minus').onclick=()=>{n=Math.max(0,n-1);render()};
 document.getElementById('plus').onclick=()=>{n=Math.min(200,n+1);render()};
-document.getElementById('done').onclick=()=>{if(!n)return;const text='отжимания: '+n;const r=document.getElementById('result');r.style.display='block';
+function send(text){const r=document.getElementById('result');r.style.display='block';
  const fromKeyboard=window.Telegram&&Telegram.WebApp.initData!==undefined&&!Telegram.WebApp.initDataUnsafe.query_id&&Telegram.WebApp.platform!=='unknown';
- try{if(!fromKeyboard)throw 0;Telegram.WebApp.sendData(text)}catch(x){r.textContent='Отсюда отправить нельзя — открой через кнопку «💪 Отжался» внизу чата. Или напиши боту: «'+text+'»'}};
+ try{if(!fromKeyboard)throw 0;Telegram.WebApp.sendData(text)}catch(x){r.textContent='Отсюда отправить нельзя — открой через кнопку «💪 Отжался» внизу чата. Или напиши боту: «'+text+'»'}}
+document.getElementById('done').onclick=()=>{if(n)send('отжимания: '+n)};
+let p=0;const pq=document.getElementById('pquick');
+function prender(){document.getElementById('pnum').textContent=p||'—';
+ document.querySelectorAll('#pquick .q').forEach(b=>b.classList.toggle('sel',+b.dataset.v===p))}
+[20,30,45,60].forEach(v=>{const b=document.createElement('div');b.className='q';b.dataset.v=v;b.textContent=v;
+ b.onclick=()=>{p=(p===v)?0:v;try{Telegram.WebApp.HapticFeedback.selectionChanged()}catch(e){}prender()};pq.appendChild(b)});
+document.getElementById('pminus').onclick=()=>{p=Math.max(0,p-5);prender()};
+document.getElementById('pplus').onclick=()=>{p=Math.min(600,p+5);prender()};
+document.getElementById('absdone').onclick=()=>send(p?'пресс: да; планка '+p+' сек':'пресс: да');
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('on',x===t));
+ document.querySelectorAll('.pane').forEach(x=>x.classList.toggle('on',x.id===t.dataset.p));document.getElementById('result').style.display='none'});
 try{Telegram.WebApp.ready();Telegram.WebApp.expand()}catch(e){}
-render();
+render();prender();
 </script></body></html>
