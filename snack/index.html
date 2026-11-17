@@ -18,7 +18,7 @@ h1{font-size:20px;margin:0 0 4px}.hint{color:var(--hint);font-size:14px;margin-b
 .opt.sel{border-color:var(--acc)}
 .cart{margin-top:16px;padding:0;list-style:none}.cart li{margin:6px 0;display:flex;align-items:center;gap:10px}
 .rm{border:0;background:var(--card);color:var(--fg);border-radius:8px;width:32px;height:32px;font-size:16px}.total{font-weight:600;margin-top:8px}
-button.done{margin-top:16px;width:100%;padding:14px;border:0;border-radius:12px;background:var(--acc);color:var(--acc-fg);font-size:16px}
+button.done{position:sticky;bottom:12px;box-shadow:0 0 0 12px var(--bg);margin-top:16px;width:100%;padding:14px;border:0;border-radius:12px;background:var(--acc);color:var(--acc-fg);font-size:16px}
 button.done:disabled{opacity:.35}
 .result{margin-top:16px;padding:12px;border-radius:12px;background:var(--card);display:none}
 </style></head><body>
@@ -31,7 +31,7 @@ button.done:disabled{opacity:.35}
 <script>
 const items=[
  {e:"🍎",n:"Яблоко",o:[["1 шт.",75],["½",38]]},
- {e:"🍊",n:"Мандарин",o:[["1 шт.",40]]},
+ {e:"🍊",n:"Мандарин",s:.65,o:[["1 шт.",40]]},
  {e:"🍊",n:"Апельсин",o:[["1 шт.",150],["½",75]]},
  {e:"🥝",n:"Киви",o:[["1 шт.",45]]},
  {e:"🥛",n:"Кефир",o:[["½ стакана",65],["стакан",130]]},
@@ -43,7 +43,7 @@ const items=[
 const cart={};let cur=null;
 const grid=document.getElementById('grid');
 items.forEach((it,i)=>{const d=document.createElement('div');d.className='tile';
- d.innerHTML=`<div class="e">${it.e}</div><div class="n">${it.n}</div><div class="c">${it.o[0][1]}+ ккал</div>`;
+ d.innerHTML=`<div class="e"${it.s?` style="transform:scale(${it.s})"`:''}>${it.e}</div><div class="n">${it.n}</div><div class="c">${it.o[0][1]}+ ккал</div>`;
  d.onclick=()=>{document.querySelectorAll('.tile').forEach(t=>t.classList.remove('sel'));
   if(it.o.length===1){cur=null;document.getElementById('qty').style.display='none';
    if(cart[it.n])delete cart[it.n];else{cart[it.n]=it.o[0];d.classList.add('sel')}
@@ -54,7 +54,8 @@ function showQty(){const it=items[cur];document.getElementById('qty').style.disp
  document.getElementById('qtitle').textContent=it.e+' '+it.n+' — сколько?';const o=document.getElementById('opts');o.innerHTML='';
  it.o.forEach(([l,k])=>{const b=document.createElement('div');b.className='opt'+(cart[it.n]&&cart[it.n][0]===l?' sel':'');b.textContent=l+' · '+k;
   b.onclick=()=>{if(cart[it.n]&&cart[it.n][0]===l)delete cart[it.n];else cart[it.n]=[l,k];
-   try{Telegram.WebApp.HapticFeedback.selectionChanged()}catch(e){}showQty();render()};o.appendChild(b)})}
+   try{Telegram.WebApp.HapticFeedback.selectionChanged()}catch(e){}showQty();render()};o.appendChild(b)});
+ document.getElementById('qty').scrollIntoView({block:'nearest',behavior:'smooth'})}
 function render(){document.querySelectorAll('.tile').forEach((t,j)=>t.classList.toggle('sel',j===cur||!!cart[items[j].n]));
  const c=document.getElementById('cart');c.innerHTML='';let s=0;
  for(const[n,[l,k]]of Object.entries(cart)){s+=k;const li=document.createElement('li');const sp=document.createElement('span');sp.textContent=`${n} ${l} — ${k} ккал`;
