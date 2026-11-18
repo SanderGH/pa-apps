@@ -13,6 +13,8 @@ h1{font-size:20px;margin:0 0 4px}.hint{color:var(--hint);font-size:14px;margin-b
 .take .t{font-size:18px;font-weight:600}.take .d{font-size:14px;color:var(--hint);margin-top:2px}
 .skip{width:96px;background:var(--card);border-radius:14px;border:0;color:var(--hint);font-size:14px}
 .take:active,.skip:active{border-color:var(--acc)}
+.take.done{opacity:.45;cursor:default}.take .ok{font-size:14px;margin-top:4px}
+.again{display:block;margin-top:6px;font-size:13px;color:var(--hint);text-decoration:underline;cursor:pointer}
 .result{margin-top:16px;padding:12px;border-radius:12px;background:var(--card);display:none}
 </style></head><body>
 <h1>💊 Таблетки</h1><div class="hint">Нажми приём — сразу отправится</div>
@@ -22,15 +24,22 @@ h1{font-size:20px;margin:0 0 4px}.hint{color:var(--hint);font-size:14px;margin-b
 // Drug names come only from the URL fragment set by the bot's button: the fragment is never sent to the server,
 // so the public page and its host never see them.
 const h=new URLSearchParams(location.hash.slice(1));
-const slots=[["утро","☀️ Утро",h.get("m")],["день","🕑 День",h.get("d")],["вечер","🌙 Вечер",h.get("e")]].filter(s=>s[2]!=="-");
+const slots=[["утро","☀️ Утро",h.get("m"),"m"],["день","🕑 День",h.get("d"),"d"],["вечер","🌙 Вечер",h.get("e"),"e"]].filter(s=>s[2]!=="-");
+// The user's day runs until sleep, so before 06:00 it is still the previous date (same rule as the bot's habits log).
+const now=new Date(Date.now()-6*3600e3);
+const today=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0');
+const fresh=h.get("day")===today;
 function send(text){const r=document.getElementById('result');r.style.display='block';
  const fromKeyboard=window.Telegram&&Telegram.WebApp.initData!==undefined&&!Telegram.WebApp.initDataUnsafe.query_id&&Telegram.WebApp.platform!=='unknown';
  try{if(!fromKeyboard)throw 0;Telegram.WebApp.sendData(text)}catch(x){r.textContent='Отсюда отправить нельзя — открой через кнопку «💊 Таблетки» внизу чата. Или напиши боту: «'+text+'»'}}
 const box=document.getElementById('slots');
-slots.forEach(([k,title,drugs])=>{const row=document.createElement('div');row.className='slot';
+slots.forEach(([k,title,drugs,key])=>{const row=document.createElement('div');row.className='slot';
  const t=document.createElement('div');t.className='take';t.innerHTML='<div class="t"></div><div class="d"></div>';
  t.querySelector('.t').textContent=title;t.querySelector('.d').textContent=drugs||'';
- t.onclick=()=>send('таблетки: '+k);
+ const at=fresh&&h.get('t'+key);
+ if(at){t.classList.add('done');const ok=document.createElement('div');ok.className='ok';ok.textContent='✓ принято '+at;
+  const a=document.createElement('span');a.className='again';a.textContent='отметить ещё раз';a.onclick=()=>send('таблетки: '+k);t.append(ok,a)}
+ else t.onclick=()=>send('таблетки: '+k);
  const s=document.createElement('button');s.className='skip';s.textContent='пропустил';s.onclick=()=>send('таблетки: пропустил '+k);
  row.append(t,s);box.appendChild(row)});
 try{Telegram.WebApp.ready();Telegram.WebApp.expand()}catch(e){}
