@@ -12,6 +12,7 @@ h1{font-size:20px;margin:0 0 4px}.hint{color:var(--hint);font-size:14px;margin-b
 .tile{background:var(--card);border-radius:14px;padding:12px 6px;text-align:center;cursor:pointer;border:2px solid transparent;user-select:none}
 .tile .e{font-size:30px;height:40px;display:flex;align-items:center;justify-content:center}.tile .n{font-size:14px;margin-top:4px}.tile .c{font-size:12px;color:var(--hint)}
 .tile.sel{border-color:var(--acc)}
+.tile.sweet{background:#fbe3ea;background:color-mix(in srgb,var(--card) 80%,#f06292)}
 .tile.drink{background:#dcecfb;background:color-mix(in srgb,var(--card) 78%,#3fa9f5)}
 h3{font-size:15px;color:var(--hint);font-weight:600;margin:16px 0 8px}
 .qty{scroll-margin-bottom:96px;margin-top:16px;background:var(--card);border-radius:14px;padding:12px;display:none}
@@ -26,6 +27,7 @@ button.done:disabled{background:var(--card);color:var(--hint)}
 </style></head><body>
 <h1>🍎 Перекус</h1><div class="hint">Выбери и нажми «Готово» — запишу в дневник</div>
 <div class="grid" id="grid"></div>
+<h3>🍬 Сладкое</h3><div class="grid" id="grid3"></div>
 <h3>🥤 Напитки</h3><div class="grid" id="grid2"></div>
 <div class="qty" id="qty"><h2 id="qtitle"></h2><div class="opts" id="opts"></div></div>
 <ul class="cart" id="cart"></ul><div class="total" id="total"></div>
@@ -37,27 +39,27 @@ const items=[
  {e:"",svg:'<svg viewBox="0 0 40 40" width="36" height="36"><ellipse cx="20" cy="20" rx="16" ry="15" fill="#c9a06a" stroke="#7a5230" stroke-width="1.5"/><path d="M20 5v30" stroke="#7a5230" stroke-width="1.8"/><path d="M9 13q4 2 2 6t3 6M12 28q3-1 5 2M14 9q2 3 4 2M31 13q-4 2-2 6t-3 6M28 28q-3-1-5 2M26 9q-2 3-4 2" stroke="#8f6337" stroke-width="1.3" fill="none" stroke-linecap="round"/></svg>',n:"Грецкий",o:[["1 шт.",33],["2 шт.",65]]},
  {e:"🍎",n:"Яблоко",o:[["1 шт.",75],["½",38]]},
  {e:"🍘",n:"Хлебцы",o:[["1 + сыр",60],["2 + сыр",120]]},
- {e:"",svg:'<svg viewBox="3 11 34 24" width="44" height="31"><ellipse cx="20" cy="32" rx="15" ry="2.5" fill="#000" opacity=".13"/><rect x="6" y="14" width="28" height="16" rx="3" fill="#f2b8c6" stroke="#c9798f" stroke-width="1.3"/><rect x="6" y="14" width="28" height="5" rx="2.5" fill="#fbe3ea"/><path d="M14 16v12M20 16v12M26 16v12" stroke="#e39ab0" stroke-width="1" opacity=".7"/></svg>',n:"Пастила",o:[["1 шт.",83],["2 шт.",165],["3 шт.",250]]},
  {e:"🍊",n:"Мандарин",s:.65,o:[["1 шт.",40]]},
  {e:"🍊",n:"Апельсин",o:[["1 шт.",150],["½",75]]},
  {e:"🥝",n:"Киви",o:[["1 шт.",45]]},
  {e:"🍌",n:"Банан",o:[["1 шт.",100],["½",50]]},
  {e:"🟠",n:"Хурма",o:[["1 шт.",120],["½",60]]},
  {e:"🍑",n:"Курага",o:[["2 шт.",30],["3 шт.",45],["4 шт.",60]]},
- {e:"🍫",n:"Шоколад",o:[["⅕ плитки",110],["⅒ плитки",55]]},
+ {d:2,e:"",svg:'<svg viewBox="3 11 34 24" width="44" height="31"><ellipse cx="20" cy="32" rx="15" ry="2.5" fill="#000" opacity=".13"/><rect x="6" y="14" width="28" height="16" rx="3" fill="#f2b8c6" stroke="#c9798f" stroke-width="1.3"/><rect x="6" y="14" width="28" height="5" rx="2.5" fill="#fbe3ea"/><path d="M14 16v12M20 16v12M26 16v12" stroke="#e39ab0" stroke-width="1" opacity=".7"/></svg>',n:"Пастила",o:[["1 шт.",83],["2 шт.",165],["3 шт.",250]]},
+ {d:2,e:"🍫",n:"Шоколад",o:[["⅕ плитки",110],["⅒ плитки",55]]},
  {d:1,e:"🥛",n:"Кефир",o:[["½ стакана",65],["стакан",130]]},
  {d:1,e:"☕",n:"Капучино",o:[["на обычном молоке",120],["на безлактозном",120],["на миндальном",60],["на овсяном",110]]},
  {d:1,e:"🍵",n:"Чай с сахаром",o:[["1 чашка",40]]}];
 const cart={};let cur=null;
-const grid=document.getElementById('grid'),grid2=document.getElementById('grid2');
-items.forEach((it,i)=>{const d=document.createElement('div');d.className='tile'+(it.d?' drink':'');
+const grid=document.getElementById('grid'),grid2=document.getElementById('grid2'),grid3=document.getElementById('grid3');
+items.forEach((it,i)=>{const d=document.createElement('div');d.className='tile'+(it.d===1?' drink':it.d===2?' sweet':'');
  d.innerHTML=`<div class="e"${it.s?` style="transform:scale(${it.s})"`:''}>${it.svg||it.e}</div><div class="n">${it.n}</div><div class="c">${it.o[0][1]}+ ккал</div>`;
  d.onclick=()=>{document.querySelectorAll('.tile').forEach(t=>t.classList.remove('sel'));
   if(it.o.length===1){cur=null;document.getElementById('qty').style.display='none';
    if(cart[it.n])delete cart[it.n];else{cart[it.n]=it.o[0];d.classList.add('sel')}
    try{Telegram.WebApp.HapticFeedback.selectionChanged()}catch(e){}render();return}
   if(cart[it.n]||cur===i){delete cart[it.n];cur=null;document.getElementById('qty').style.display='none';render();return}
-  cur=i;showQty();render()};(it.d?grid2:grid).appendChild(d)});
+  cur=i;showQty();render()};(it.d===1?grid2:it.d===2?grid3:grid).appendChild(d)});
 function showQty(){const it=items[cur];document.getElementById('qty').style.display='block';
  document.getElementById('qtitle').textContent=(it.e?it.e+' ':'')+it.n+' — сколько?';const o=document.getElementById('opts');o.innerHTML='';
  it.o.forEach(([l,k])=>{const b=document.createElement('div');b.className='opt'+(cart[it.n]&&cart[it.n][0]===l?' sel':'');b.textContent=l+' · '+k;
