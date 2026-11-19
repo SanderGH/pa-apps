@@ -49,7 +49,7 @@ const items=[
  {d:2,e:"🍫",n:"Шоколад",o:[["⅕ плитки",110],["⅒ плитки",55]]},
  {d:1,e:"🥛",n:"Кефир",o:[["½ стакана",65],["стакан",130]]},
  {d:1,e:"☕",n:"Капучино",o:[["на обычном молоке",120],["на безлактозном",120],["на миндальном",60],["на овсяном",110]]},
- {d:1,e:"🍵",n:"Чай с сахаром",o:[["1 чашка",40]]}];
+ {d:1,e:"",svg:'<svg viewBox="0 0 40 40" width="34" height="34"><ellipse cx="18" cy="35" rx="13" ry="2.5" fill="#000" opacity=".13"/><path d="M7 12h22v14a8 8 0 0 1-8 8h-6a8 8 0 0 1-8-8z" fill="#f4efe9" stroke="#8a6a52" stroke-width="1.4"/><path d="M29 16h2a4 4 0 0 1 0 8h-2" fill="none" stroke="#8a6a52" stroke-width="1.6"/><ellipse cx="18" cy="13" rx="10.5" ry="2.6" fill="#7b4a2a"/><path d="M14 8c-1-2 1-3 0-5M20 8c-1-2 1-3 0-5" stroke="#bbb" stroke-width="1.2" fill="none" stroke-linecap="round"/></svg>',n:"Какао",o:[["200 мл без сахара",120],["250 мл с сахаром",215]]}];
 const cart={};let cur=null;
 const grid=document.getElementById('grid'),grid2=document.getElementById('grid2'),grid3=document.getElementById('grid3');
 items.forEach((it,i)=>{const d=document.createElement('div');d.className='tile'+(it.d===1?' drink':it.d===2?' sweet':'');
